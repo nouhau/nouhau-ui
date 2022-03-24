@@ -21,8 +21,6 @@ const login = async (request: NextApiRequest, response: NextApiResponse) => {
         token,
         process.env.TOKEN
     );
-
-    console.log(user)
     
     const responseData: LoginResponse = {
       token,
