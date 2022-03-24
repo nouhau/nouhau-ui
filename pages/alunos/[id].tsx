@@ -14,50 +14,39 @@ import { Student } from '../../src/models/student.model'
 import { parseCookies } from 'nookies'
    
 export const getStaticPaths = async () => {
-  const { 'nouhau.token': token } = parseCookies()
-
-  const students: Student[] = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/getStudents`,
-    {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    }
+  const fetchStudents = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/getStudents`
   )
     .then(async (response) => {
       const data = await response.json();
-      return data.students;
+      return data
     })
     .catch((error) => {
       return error;
     });
 
-  const ids = students.map(student => ({ params: { id: student.user_id }}))
+  const students: Student[] = fetchStudents.students
+
+  const paths = students.map(student => ({ params: { id: student.user_id }}))
   
   return {
-      paths: ids,
-      fallback: 'blocking'
+    paths,
+    fallback: 'blocking'
   }
 }
 
 export const getStaticProps = async ({ params }: any) => {
   const id = params?.id
-  const { 'nouhau.token': token } = parseCookies()
   
   const student = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/getUser/${id}`,
-    {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    }
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/getUser/${id}`
   )
     .then(async (response) => {
       const data = await response.json();
-      return data.user;
+      return data.user
     })
     .catch((error) => {
-      return error;
+      return error
     });
 
   const notes: Note[] = await fetch(
@@ -76,19 +65,21 @@ export const getStaticProps = async ({ params }: any) => {
   return {
     props: {
       student,
-      notes,
-      token
+      notes
     }
   };
 }
 
-const EvaluationPage: NextPage = ({ student, notes, token }: any) => {
+const EvaluationPage: NextPage = ({ student, notes }: any) => {
   const { register, handleSubmit } = useForm()
+  const { 'nouhau.user': user } = parseCookies()
+  const { 'nouhau.token': token } = parseCookies()
 
-  const { 'nouhau.user': evaluatorId } = parseCookies()
+  notes.forEach((note: Note) => {
+    note.evaluator_id !== user && notes.pop(note)
+  })
 
   const handleSignIn: SubmitHandler<any> = async (data) => {
-    
     const notesRequest: any = []
     Object.keys(data).forEach(key => {
         let evidenceId: string = ''
@@ -106,8 +97,8 @@ const EvaluationPage: NextPage = ({ student, notes, token }: any) => {
       })
 
     const requestBody = {
-      evaluatorId,
-      peopleId: student.user_id.studentId,
+      evaluatorId: user,
+      peopleId: student.user_id,
       notes: notesRequest
     }
 
@@ -121,7 +112,6 @@ const EvaluationPage: NextPage = ({ student, notes, token }: any) => {
     })
     .then(async response => {
       const data = await response.json()
-      console.log(data)
 
       data.affected === 0 && alert('Erro ao salvar as notas')
       alert('Notas salvas')

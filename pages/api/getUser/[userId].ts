@@ -3,17 +3,18 @@ import { NextApiRequest, NextApiResponse } from 'next'
 
 const getUser = async (request: NextApiRequest, response: NextApiResponse) => {
   const { userId } = request.query
-
+  
   await axios({
     method: 'GET',
+    //TODO: add token to access route
     url: `${process.env.API_GATEWAY_URL}/user/${userId}`,
     headers: { 
       'Content-Type': 'application/json',
-      'Authorization': `${request.headers.authorization}`
+      // 'Authorization': `${request.headers.authorization}`
     }
   })
   .then(async result => {
-    return response.status(200).json({ result })
+    return response.status(200).json(result.data)
   })
   .catch(error => {
     if(error.response){

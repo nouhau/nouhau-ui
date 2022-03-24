@@ -15,7 +15,6 @@ const EvaluatorStatus = ({ studentId, evaluatorId }: IEvaluatorStatus) => {
 
   useEffect(() => {
     const { ['nouhau.token']: token } = parseCookies()
-
     const getNotes = async () => {
       await fetch(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/getEvaluatorNotes/${studentId}`,
@@ -27,25 +26,23 @@ const EvaluatorStatus = ({ studentId, evaluatorId }: IEvaluatorStatus) => {
       )
       .then(async (response) => {
         const data = await response.json();
-
         const fetchNotes: Note[] = data.notes
 
-        const waiting = fetchNotes.find(note => !note.note)
-        const notFilled = fetchNotes.find(note => !note.note && note.evaluator_id === evaluatorId)
+        const waiting = fetchNotes.filter(note => !note.note)
+        const notFilled = fetchNotes.filter(note => !note.note && note.evaluator_id === evaluatorId)
 
-        if( waiting && !notFilled ) {
+        if( waiting.length > 0 && notFilled.length === 0 ) {
           setStatus(evaluatorStatus.WAITING)
         }
 
-        notFilled && setStatus(evaluatorStatus.NOT_FILLED)
+        notFilled.length > 0 && setStatus(evaluatorStatus.NOT_FILLED)
 
-        if( !waiting && !notFilled ) {
+        if( waiting.length === 0 && notFilled.length === 0 ) {
           setStatus(evaluatorStatus.CONCLUDED)
         }
       })
       .catch(error => {
         setStatus(evaluatorStatus.NOT_FILLED)
-        alert('ERRO')
       });
     }
 

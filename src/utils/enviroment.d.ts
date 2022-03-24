@@ -3,6 +3,7 @@ declare global {
     interface ProcessEnv {
       TOKEN: string;
       NEXT_PUBLIC_BASE_URL: string;
+      API_GATEWAY_URL: string;
       NODE_ENV: 'development' | 'production';
       PORT?: string;
       PWD: string;

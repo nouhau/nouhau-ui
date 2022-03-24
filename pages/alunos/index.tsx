@@ -62,11 +62,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     const students: Student[] = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/getStudents`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/getStudents`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
     ).then(async (response) => {
       const data = await response.json();
       return data.students;
-    });
+    })
 
     return {
       props: {

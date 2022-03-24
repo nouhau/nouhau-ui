@@ -40,7 +40,6 @@ const Home: NextPage = () => {
   const { register, handleSubmit } = useForm<IUser>()
 
   const handleSignIn: SubmitHandler<IUser> = async (data) => {
-    console.log(data)
     setValidating(true)
     await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/login`, {
       method: 'POST',

@@ -6,14 +6,14 @@ const getEvaluatorNotes = async (request: NextApiRequest, response: NextApiRespo
 
   await axios({
     method: 'GET',
-    url: `${process.env.API_GATEWAY_URL}/evaluatornote/${studentId}`,
+    url: `http://localhost:5010/evaluatornote/${studentId}`,
     headers: { 
       'Content-Type': 'application/json',
-      'Authorization': `${request.headers.authorization}`
+      // 'Authorization': `${request.headers.authorization}`
     }
   })
   .then(async result => {
-    return response.status(200).json({ result })
+    return response.status(200).json(result.data)
   })
   .catch(error => {
     if(error.response){

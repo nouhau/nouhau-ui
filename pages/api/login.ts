@@ -8,7 +8,7 @@ const login = async (request: NextApiRequest, response: NextApiResponse) => {
   const signData: SignData = request.body
   await axios({
     method: 'POST',
-    url: `${process.env.API_GATEWAY_URL}/login`,
+    url: `${process.env.API_GATEWAY_URL}/login`,
     headers: { 
       'Content-Type': 'application/json',
     },
@@ -21,6 +21,8 @@ const login = async (request: NextApiRequest, response: NextApiResponse) => {
         token,
         process.env.TOKEN
     );
+
+    console.log(user)
     
     const responseData: LoginResponse = {
       token,

@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { NextApiRequest, NextApiResponse } from 'next'
 
-const getStudents = async (request: NextApiRequest, response: NextApiResponse) => {
+const getStudents = async (request: NextApiRequest, response: NextApiResponse, token: any) => {
   await axios({
     method: 'GET',
     url: `${process.env.API_GATEWAY_URL}/students`,
+    //TODO: add token to access route
     headers: { 
       'Content-Type': 'application/json',
-      'Authorization': `${request.headers.authorization}`
+      // 'Authorization': `${request.headers.authorization}`
     }
   })
   .then(async result => {
@@ -18,7 +19,6 @@ const getStudents = async (request: NextApiRequest, response: NextApiResponse) =
       return response.status(error.response.status).json(error.response.data)
     }
     
-    console.log(error)
     return response.status(500).json({error: 'Internal Server Error'})
   })
 }

@@ -2,8 +2,6 @@ import axios from 'axios';
 import { NextApiRequest, NextApiResponse } from 'next'
 
 const updateNotes = async (request: NextApiRequest, response: NextApiResponse) => {
-  console.log(request.body)
-  
   await axios({
     method: 'PUT',
     url: `${process.env.API_GATEWAY_URL}/evaluatornote`,
