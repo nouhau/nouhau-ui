@@ -11,7 +11,7 @@ interface IEvaluatorStatus {
 }
 
 const EvaluatorStatus = ({ studentId, evaluatorId }: IEvaluatorStatus) => {
-  const [status, setStatus] = useState<string>('')
+  const [status, setStatus] = useState<string | null>(null)
 
   useEffect(() => {
     const { ['nouhau.token']: token } = parseCookies()
@@ -28,17 +28,17 @@ const EvaluatorStatus = ({ studentId, evaluatorId }: IEvaluatorStatus) => {
         const data = await response.json();
         const fetchNotes: Note[] = data.notes
 
-        const waiting = fetchNotes.filter(note => !note.note)
-        const notFilled = fetchNotes.filter(note => !note.note && note.evaluator_id === evaluatorId)
+        const evaluatorNotes = fetchNotes.filter(note => note.evaluator_id === evaluatorId)
 
-        if( waiting.length > 0 && notFilled.length === 0 ) {
-          setStatus(evaluatorStatus.WAITING)
+        const waiting = fetchNotes.filter(note => note.note !== undefined && note.note !== null)
+        const notFilled = fetchNotes.filter(note => note.note !== undefined && note.note !== null && note.evaluator_id === evaluatorId)
+
+        if( waiting.length === fetchNotes.length && notFilled.length === evaluatorNotes.length) {
+          setStatus(evaluatorStatus.CONCLUDED)
         }
 
-        notFilled.length > 0 && setStatus(evaluatorStatus.NOT_FILLED)
-
-        if( waiting.length === 0 && notFilled.length === 0 ) {
-          setStatus(evaluatorStatus.CONCLUDED)
+        if(waiting.length < fetchNotes.length){
+          notFilled.length === evaluatorNotes.length ? setStatus(evaluatorStatus.WAITING) : setStatus(evaluatorStatus.NOT_FILLED)
         }
       })
       .catch(error => {

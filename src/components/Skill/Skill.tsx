@@ -16,10 +16,11 @@ import { useState } from 'react';
 interface ISkill {
   name: string,
   defaultValue: number
-  register: any
+  register?: any,
+  status: null | number
 }
 
-const Skill = ({ name, defaultValue, register }: ISkill) => {
+const Skill = ({ name, defaultValue, register, status }: ISkill) => {
   const [value, setValue] = useState<number>(defaultValue)
 
   return (
@@ -45,18 +46,22 @@ const Skill = ({ name, defaultValue, register }: ISkill) => {
             <NumberInputField
               {...register}
             />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
+            {
+              register && 
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            }
           </NumberInput>
         </Flex>
         <Spacer/>
         <Box>
           {
-            !defaultValue ?
-            <WarningIcon w={5} h={5} color='#b96576'/> :
-            <CheckCircleIcon w={5} h={5} color='#10DCAB'/> 
+            status !== undefined && status !== null ?
+            <CheckCircleIcon w={5} h={5} color='#10DCAB'/> :
+            <WarningIcon w={5} h={5} color='#b96576'/> 
+            
           }
         </Box>
       </Flex>

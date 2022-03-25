@@ -2,7 +2,13 @@ import {
   Button,
   Flex,
   Text,
-  Box
+  Box,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td
 } from '@chakra-ui/react'
 import { CheckCircleIcon, WarningIcon } from '@chakra-ui/icons'
 import type { NextPage } from 'next'
@@ -10,8 +16,12 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import Skill from '../../src/components/Skill/Skill'
 import Card from '../../src/lib/Card'
 import { Note } from '../../src/models/note.model'
-import { Student } from '../../src/models/student.model'
 import { parseCookies } from 'nookies'
+import { useContext, useEffect, useState } from 'react'
+import { AuthContext } from '../../src/components/contexts/AuthContext'
+import EvaluatorData from '../../src/components/EvaluatorData/EvaluatorData'
+import { User } from '../../src/models/user.model'
+import Router from 'next/router'
    
 export const getStaticPaths = async () => {
   const fetchStudents = await fetch(
@@ -25,7 +35,7 @@ export const getStaticPaths = async () => {
       return error;
     });
 
-  const students: Student[] = fetchStudents.students
+  const students: User[] = fetchStudents.students
 
   const paths = students.map(student => ({ params: { id: student.user_id }}))
   
@@ -71,13 +81,40 @@ export const getStaticProps = async ({ params }: any) => {
 }
 
 const EvaluationPage: NextPage = ({ student, notes }: any) => {
+  const [ dataNote, setDataNote ] = useState<any | null>(null)
   const { register, handleSubmit } = useForm()
-  const { 'nouhau.user': user } = parseCookies()
   const { 'nouhau.token': token } = parseCookies()
+  const { user } = useContext(AuthContext)
 
-  notes.forEach((note: Note) => {
-    note.evaluator_id !== user && notes.pop(note)
-  })
+  notes.sort((a: Note ,b: Note) => (a.evaluator_id > b.evaluator_id) ? 1 : ((b.evaluator_id > a.evaluator_id) ? -1 : 0))
+
+  // const notesEvaluator: Note[] = []
+  const notesEvaluator: Note[] = notes.filter((note: Note) => note.evaluator_id === user?.user_id)
+
+  let newNotes: any
+  if(user?.role === 'admin'){
+    newNotes = notes.map((note: Note) => note.evaluator_id)
+    newNotes = newNotes.filter((id: any, key: any) => newNotes.indexOf(id) === key)
+  }
+
+  useEffect(() => {
+    const getDataNote = async () => {
+      await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/getDataNote/${student.user_id}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      )
+      .then(async response => {
+        const data = await response.json()
+        setDataNote(data)
+      })     
+    }
+
+    getDataNote()
+  }, [])
 
   const handleSignIn: SubmitHandler<any> = async (data) => {
     const notesRequest: any = []
@@ -97,7 +134,7 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
       })
 
     const requestBody = {
-      evaluatorId: user,
+      evaluatorId: user?.user_id,
       peopleId: student.user_id,
       notes: notesRequest
     }
@@ -117,7 +154,26 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
       alert('Notas salvas')
     })
     .catch(error => {
-      console.log(error)
+      alert('Ocorreu um erro')
+    })
+  }
+
+  const updateMapping: any = async () => {
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/updateMapping`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        mappingId: dataNote.mappingData.mapping.mapping_id
+      })
+    })
+    .then(async response => {
+      const data = await response.json()
+      alert('Notas salvas')
+    })
+    .catch(error => {
       alert('Ocorreu um erro')
     })
   }
@@ -126,46 +182,147 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
     <>
       <Card>
         <Box padding="5">
-          <Text fontWeight="bold">
-            Aluno: {student.name}
-          </Text>
+          <Text fontWeight="bold">Aluno: {student.name}</Text>
         </Box>
       </Card>
       <Card>
         <Box padding="5">
-          {notes.map((note: Note) => {
-            if(!note.note){
-              note.note = 0
-            }
+          {user?.role === "evaluator" &&
+            notesEvaluator.map((note: Note) => {
+              return (
+                <div key={note.evaluation_id}>
+                  <Skill
+                    name={note.evidenceId.name}
+                    defaultValue={!note.note ? 0 : note.note}
+                    register={register(`${note.evidenceId.name}`)}
+                    status={note.note}
+                  />
+                </div>
+              );
+            })}
 
-            return (
-              <div key={note.evaluation_id}>
-                <Skill 
-                  name={note.evidenceId.name}
-                  defaultValue={note.note}
-                  register={register(`${note.evidenceId.name}`)}
-                />
-              </div>
-            );
-          })}
-          <Flex paddingTop='5' direction='column' gap={1}>
-            <Text fontStyle='italic' fontSize='14px'>
-              <CheckCircleIcon w={4} h={4} color='#10DCAB'/> Nota salva
+          {user?.role === "admin" &&
+            newNotes.map((evaluatorId: string) => {
+              const evaluatorNotes = notes.filter(
+                (note: Note) => note.evaluator_id === evaluatorId
+              );
+
+              return (
+                <div key={evaluatorId}>
+                  <EvaluatorData key={evaluatorId} evaluatorId={evaluatorId} />
+                  {evaluatorNotes.map((note: Note) => {
+                    return (
+                      <Skill
+                        key={note.evaluation_id}
+                        name={note.evidenceId.name}
+                        defaultValue={!note.note ? 0 : note.note}
+                        status={note.note}
+                      />
+                    );
+                  })}
+                </div>
+              );
+            })}
+          <Flex paddingTop="5" direction="column" gap={1}>
+            <Text fontStyle="italic" fontSize="14px">
+              <CheckCircleIcon w={4} h={4} color="#10DCAB" /> Nota salva
             </Text>
-            <Text fontStyle='italic' fontSize='14px'>
-              <WarningIcon w={4} h={4} color='#b96576'/> Nota pendente
+            <Text fontStyle="italic" fontSize="14px">
+              <WarningIcon w={4} h={4} color="#b96576" /> Nota pendente
             </Text>
-          </Flex>
-          <Flex paddingTop="2">
-            <Button
-              onClick={handleSubmit(handleSignIn)}
-              backgroundColor="#10DCAB"
-            >
-              Salvar
-            </Button>
           </Flex>
         </Box>
       </Card>
+      {user?.role !== "admin" ? (
+        <Card>
+          <Box paddingTop="5" padding="5">
+            <Flex>
+              <Button
+                onClick={handleSubmit(handleSignIn)}
+                backgroundColor="#10DCAB"
+              >
+                Salvar
+              </Button>
+              <Button 
+                marginLeft='2'
+                onClick={() => {
+                  Router.push('/admin')
+                }} 
+                color="#b96576"
+              >
+                Voltar
+              </Button>
+            </Flex>
+          </Box>
+        </Card>
+      ) : (
+        <Card>
+          <Flex direction="row" paddingTop="5" paddingLeft="5">
+          <Flex direction="column" width="50%">
+              <Text fontWeight="bold">Notas</Text>
+              <Table size="sm">
+                <Thead>
+                  <Tr>
+                    <Th>Competências</Th>
+                    <Th isNumeric>Nota</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {dataNote?.mappingData.mappingNotes.map((mappingNote: any) => {
+                    return(
+                      <Tr key={mappingNote.mappingNote_id}>
+                        <Td>{mappingNote.skillId.name}</Td>
+                        <Td isNumeric>{mappingNote.note}</Td>
+                      </Tr>
+                    )
+                  })}
+                </Tbody>
+              </Table>
+            </Flex>
+            <Flex direction="column" marginLeft='3' width="50%">
+              <Text fontWeight="bold">Médias</Text>
+              <Table size="sm">
+                <Thead>
+                  <Tr>
+                    <Th>Evidência</Th>
+                    <Th isNumeric>Média</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {dataNote?.records.map((record: any) => {
+                    return(
+                      <Tr key={record.record_id}>
+                        <Td>{record.evidenceId.name}</Td>
+                        <Td isNumeric>{record.average !== null && record.average !== undefined ? record.average : '-'}</Td>
+                      </Tr>
+                    )
+                  })}
+                </Tbody>
+              </Table>
+            </Flex>
+          </Flex>
+          <Box paddingLeft="5">
+            <Flex padding="2">
+              <Button 
+                onClick={() => {
+                  Router.push('/admin')
+                }} 
+                color="#b96576"
+              >
+                Voltar
+              </Button>
+
+              <Button 
+                marginLeft='2' 
+                onClick={updateMapping} 
+                backgroundColor="#10DCAB"
+              >
+                Gerar notas
+              </Button>
+            </Flex>
+          </Box>
+        </Card>
+      )}
     </>
   );
 }

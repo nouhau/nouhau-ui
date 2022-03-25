@@ -4,6 +4,7 @@ import {
   Stack, 
   Button
 } from '@chakra-ui/react'
+import { verify } from 'jsonwebtoken'
 import type { GetServerSideProps, NextPage } from 'next'
 import Router from 'next/router'
 import { parseCookies, setCookie } from 'nookies'
@@ -19,11 +20,22 @@ interface IUser {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { ['nouhau.token']: token } = parseCookies(context)
-  
+
+  if(!token){
+    return {
+      props: {}
+    }
+  }
+
+  const user: any = verify(
+    token,
+    process.env.TOKEN
+  )
+
   if(token) {
     return {
       redirect: {
-        destination: '/alunos',
+        destination: user.role === 'admin' ? '/admin' : '/alunos',
         permanent: false
       },
       props: {}

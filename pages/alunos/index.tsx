@@ -7,12 +7,12 @@ import {
 import { GetServerSideProps, NextPage } from 'next'
 import NextLink from 'next/link'
 import Card from '../../src/lib/Card'
-import { Student } from '../../src/models/student.model'
 import { parseCookies } from 'nookies'
 import { verify } from 'jsonwebtoken'
 import React from 'react'
 import EvaluatorStatus from '../../src/components/EvaluatorStatus/EvaluatorStatus'
 import { Payload } from '../../src/models/payload.model'
+import { User } from '../../src/models/user.model'
 
 const StudentsPage: NextPage = ({ user, students }: any) => {
   return (
@@ -24,7 +24,7 @@ const StudentsPage: NextPage = ({ user, students }: any) => {
           </Text>
         </Box>
       </Card>
-      {students.map((student: Student) => {
+      {students.map((student: User) => {
         return(
           <Card key={student.name}>
             <Flex direction='row' padding='3'>
@@ -48,7 +48,7 @@ const StudentsPage: NextPage = ({ user, students }: any) => {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { ['nouhau.token']: token } = parseCookies(context)
   const authorization = ['admin', 'evaluator']
-  
+
   try {
     const user = verify(token, process.env.TOKEN) as Payload
 
@@ -61,7 +61,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       }
     }
 
-    const students: Student[] = await fetch(
+    const students: User[] = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/getStudents`,
       {
         headers: {
