@@ -30,6 +30,7 @@ const login = async (request: NextApiRequest, response: NextApiResponse) => {
     return response.status(200).json(responseData)
   })
   .catch(error => {
+    console.log(error.response)
     return response.status(403).json({message: 'Senha/Email inválido'})
   })
 }
