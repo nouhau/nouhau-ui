@@ -25,10 +25,10 @@ import Router from 'next/router'
    
 export const getStaticPaths = async () => {
   const fetchStudents = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/getStudents`
+    `${process.env.API_GATEWAY_URL}/students`
   )
     .then(async (response) => {
-      const data = await response.json();
+      const data = response.json();
       return data
     })
     .catch((error) => {
@@ -49,7 +49,7 @@ export const getStaticProps = async ({ params }: any) => {
   const id = params?.id
   
   const student = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/getUser/${id}`
+    `${process.env.API_GATEWAY_URL}/user/${id}`
   )
     .then(async (response) => {
       const data = await response.json();
@@ -60,7 +60,7 @@ export const getStaticProps = async ({ params }: any) => {
     });
 
   const notes: Note[] = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/getEvaluatorNotes/${student.user_id}`
+    `${process.env.API_GATEWAY_URL}/evaluatornote/${student.user_id}`
   ).then(async (response) => {
     const data = await response.json();
     return data.notes
