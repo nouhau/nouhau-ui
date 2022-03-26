@@ -14,7 +14,7 @@ export const EvaluatorData = ({ evaluatorId }: IEvaluatorData) => {
     const getEvaluator = async () => {
       const { 'nouhau.token': token } = parseCookies();
       await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/getUser/${evaluatorId}`,
+        `${process.env.API_GATEWAY_URL}/user/${evaluatorId}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`

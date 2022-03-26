@@ -100,7 +100,7 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
   useEffect(() => {
     const getDataNote = async () => {
       await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/getDataNote/${student.user_id}`,
+        `${process.env.API_GATEWAY_URL}/records/${student.user_id}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -139,7 +139,7 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
       notes: notesRequest
     }
 
-    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/updateNotes`, {
+    await fetch(`${process.env.API_GATEWAY_URL}/evaluatornote`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
   }
 
   const updateMapping: any = async () => {
-    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/updateMapping`, {
+    await fetch(`${process.env.API_GATEWAY_URL}/mapping`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

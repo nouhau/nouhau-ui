@@ -17,7 +17,7 @@ const EvaluatorStatus = ({ studentId, evaluatorId }: IEvaluatorStatus) => {
     const { ['nouhau.token']: token } = parseCookies()
     const getNotes = async () => {
       await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/getEvaluatorNotes/${studentId}`,
+        `${process.env.API_GATEWAY_URL}/evaluatornote/${studentId}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`

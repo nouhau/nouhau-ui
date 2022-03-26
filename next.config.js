@@ -3,7 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   env: {
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
-    API_GATEWAY_URL: process.env.API_GATEWAY_URL
+    API_GATEWAY_URL: process.env.API_GATEWAY_URL,
+    TOKEN: process.env.TOKEN
   }
 }
 

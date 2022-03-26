@@ -53,7 +53,7 @@ const Home: NextPage = () => {
 
   const handleSignIn: SubmitHandler<IUser> = async (data) => {
     setValidating(true)
-    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/login`, {
+    await fetch(`${process.env.API_GATEWAY_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -61,15 +61,20 @@ const Home: NextPage = () => {
       body: JSON.stringify(data),
     })
     .then(async (response) => {
-      const { token, user } = await response.json()
+      const data = await response.json()
 
-      if(!token || !user) {
+      const user: any = verify(
+        data.token,
+        process.env.TOKEN
+      )
+
+      if(!data.token || !user) {
         setValidating(false)
         alert('Erro ao logar')
         return { error: 'Login error' }
       }
 
-      setCookie(undefined, 'nouhau.token', token, {
+      setCookie(undefined, 'nouhau.token', data.token, {
         maxAge: 60 * 60 * 24 * 365, //1 year
       });
 

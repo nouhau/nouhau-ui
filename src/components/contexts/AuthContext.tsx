@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
 
       if (user) {
         await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/getUser/${user}`,
+          `${process.env.API_GATEWAY_URL}/user/${user}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`
