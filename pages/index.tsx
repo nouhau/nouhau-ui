@@ -35,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if(token) {
     return {
       redirect: {
-        destination: '/alunos',
+        destination: user.role === 'admin' ? '/admin' : '/alunos',
         permanent: false
       },
       props: {}
