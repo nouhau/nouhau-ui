@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     const students: User[] = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/getStudents`,
+      `${process.env.API_GATEWAY_URL}/students`,
       {
         headers: {
           'Authorization': `Bearer ${token}`

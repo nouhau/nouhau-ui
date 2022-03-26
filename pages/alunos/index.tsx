@@ -14,8 +14,6 @@ import EvaluatorStatus from '../../src/components/EvaluatorStatus/EvaluatorStatu
 import { Payload } from '../../src/models/payload.model'
 import { User } from '../../src/models/user.model'
 
-//TODO: view data
-
 const StudentsPage: NextPage = ({ user, students }: any) => {
   return (
     <>
@@ -64,7 +62,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     const students: User[] = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/getStudents`,
+      `${process.env.API_GATEWAY_URL}/students`,
       {
         headers: {
           'Authorization': `Bearer ${token}`
