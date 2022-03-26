@@ -14,6 +14,8 @@ import EvaluatorStatus from '../../src/components/EvaluatorStatus/EvaluatorStatu
 import { Payload } from '../../src/models/payload.model'
 import { User } from '../../src/models/user.model'
 
+//TODO: view data
+
 const StudentsPage: NextPage = ({ user, students }: any) => {
   return (
     <>
