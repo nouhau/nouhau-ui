@@ -83,7 +83,9 @@ const Home: NextPage = () => {
       });
 
       setUser(user);
-      Router.push('/alunos');
+      setValidating(false)
+      user.role === 'admin' && Router.push('/admin')
+      user.role === 'evaluator' && Router.push('/alunos');
     })
   }
 
