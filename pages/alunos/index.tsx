@@ -47,12 +47,11 @@ const StudentsPage: NextPage = ({ user, students }: any) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { ['nouhau.token']: token } = parseCookies(context)
-  const authorization = ['admin', 'evaluator']
 
   try {
     const user = verify(token, process.env.TOKEN) as Payload
 
-    if(!authorization.includes(user.role)) {
+    if(user.role !== 'evaluator') {
       return {
         redirect: {
           destination: '/',

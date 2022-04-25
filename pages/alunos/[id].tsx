@@ -88,8 +88,10 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
 
   notes.sort((a: Note ,b: Note) => (a.evaluator_id > b.evaluator_id) ? 1 : ((b.evaluator_id > a.evaluator_id) ? -1 : 0))
 
-  // const notesEvaluator: Note[] = []
-  const notesEvaluator: Note[] = notes.filter((note: Note) => note.evaluator_id === user?.user_id)
+  console.log(user)
+
+  const userId: string | undefined = user?.user_id ? user?.user_id : user?.sub
+  const notesEvaluator: Note[] = notes.filter((note: Note) => note.evaluator_id === userId)
 
   let newNotes: any
   if(user?.role === 'admin'){
@@ -100,7 +102,7 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
   useEffect(() => {
     const getDataNote = async () => {
       await fetch(
-        `${process.env.API_GATEWAY_URL}/records/${student.user_id}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/getDataNote/${student.user_id}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -154,6 +156,7 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
       alert('Notas salvas')
     })
     .catch(error => {
+      console.log(error)
       alert('Ocorreu um erro')
     })
   }
@@ -166,7 +169,7 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
-        mappingId: dataNote.mappingData.mapping.mapping_id
+        mappingId: dataNote?.mappingData.mapping.mapping_id
       })
     })
     .then(async response => {
@@ -177,7 +180,7 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
       alert('Ocorreu um erro')
     })
   }
-
+  
   return (
     <>
       <Card>
@@ -189,6 +192,7 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
         <Box padding="5">
           {user?.role === "evaluator" &&
             notesEvaluator.map((note: Note) => {
+              console.log(note)
               return (
                 <div key={note.evaluation_id}>
                   <Skill
@@ -206,6 +210,8 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
               const evaluatorNotes = notes.filter(
                 (note: Note) => note.evaluator_id === evaluatorId
               );
+
+              console.log(evaluatorNotes)
 
               return (
                 <div key={evaluatorId}>
