@@ -8,7 +8,7 @@ interface IAuthContext {
   user: User | null;
   validating: boolean,
   setValidating: (validating: boolean) => void
-  setUser: (user: User) => void
+  setUser: (user: User | null) => void
 }
 
 interface IAuthProvider {
@@ -40,7 +40,9 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
           .then(async response => {
             const { user } = await response.json()
             setUser(user)
-            Router.push('/alunos');
+
+            user.role === 'admin' && Router.push('/admin')
+            user.role === 'evaluator' && Router.push('/alunos');
           })
       }
     }
