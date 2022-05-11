@@ -142,7 +142,7 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
     }
 
     await fetch(`${process.env.API_GATEWAY_URL}/evaluatornote`, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
