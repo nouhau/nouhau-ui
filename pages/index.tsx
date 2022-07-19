@@ -68,6 +68,8 @@ const Home: NextPage = () => {
         process.env.TOKEN
       )
 
+      console.log(user)
+
       if(!data.token || !user) {
         setValidating(false)
         alert('Erro ao logar')
@@ -78,7 +80,7 @@ const Home: NextPage = () => {
         maxAge: 60 * 60 * 24 * 365, //1 year
       });
 
-      setCookie(undefined, 'nouhau.user', user.sub, {
+      setCookie(undefined, 'nouhau.user', user.user_id, {
         maxAge: 60 * 60 * 24 * 365, //1 year
       });
 

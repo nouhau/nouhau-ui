@@ -20,6 +20,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     const user = verify(token, process.env.TOKEN) as Payload
 
+    console.log(user)
+
     if(user.role !== 'admin') {
       return {
         redirect: {
@@ -38,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       }
     ).then(async (response) => {
       const data = await response.json();
-      return data.students;
+      return data;
     })
 
     return {

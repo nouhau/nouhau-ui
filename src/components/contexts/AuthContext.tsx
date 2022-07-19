@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
           }
         )
           .then(async response => {
-            const { user } = await response.json()
+            const user = await response.json()
             setUser(user)
 
             user.role === 'admin' && Router.push('/admin')

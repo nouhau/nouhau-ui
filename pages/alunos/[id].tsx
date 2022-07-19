@@ -28,14 +28,14 @@ export const getStaticPaths = async () => {
     `${process.env.API_GATEWAY_URL}/students`
   )
     .then(async (response) => {
-      const data = response.json();
+      const data = await response.json();
       return data
     })
     .catch((error) => {
       return error;
     });
 
-  const students: User[] = fetchStudents.students
+  const students: User[] = await fetchStudents
 
   const paths = students.map(student => ({ params: { id: student.user_id }}))
   
@@ -47,23 +47,23 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async ({ params }: any) => {
   const id = params?.id
-  
+
   const student = await fetch(
     `${process.env.API_GATEWAY_URL}/user/${id}`
   )
     .then(async (response) => {
       const data = await response.json();
-      return data.user
+      return data
     })
     .catch((error) => {
       return error
     });
-
+  
   const notes: Note[] = await fetch(
     `${process.env.API_GATEWAY_URL}/evaluatornote/${student.user_id}`
   ).then(async (response) => {
     const data = await response.json();
-    return data.notes
+    return data
   });
 
   if(!student) {
@@ -118,6 +118,8 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
     getDataNote()
   }, [])
 
+  console.log('reload', dataNote)
+
   const handleSignIn: SubmitHandler<any> = async (data) => {
     const notesRequest: any = []
     Object.keys(data).forEach(key => {
@@ -162,7 +164,7 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
   }
 
   const updateMapping: any = async () => {
-    await fetch(`${process.env.API_GATEWAY_URL}/mapping`, {
+    await fetch(`${process.env.API_GATEWAY_URL}/mappingnote`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
