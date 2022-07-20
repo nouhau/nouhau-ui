@@ -35,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if(token) {
     return {
       redirect: {
-        destination: user.role === 'admin' ? '/admin' : '/alunos',
+        destination: user.role === 'evaluator' ? '/alunos' : `/${user.role}`,
         permanent: false
       },
       props: {}
@@ -62,11 +62,14 @@ const Home: NextPage = () => {
     })
     .then(async (response) => {
       const data = await response.json()
+      console.log(data)
 
       const user: any = verify(
         data.token,
         process.env.TOKEN
       )
+
+      console.log(user)
 
       if(!data.token || !user) {
         setValidating(false)
@@ -78,14 +81,13 @@ const Home: NextPage = () => {
         maxAge: 60 * 60 * 24 * 365, //1 year
       });
 
-      setCookie(undefined, 'nouhau.user', user.sub, {
+      setCookie(undefined, 'nouhau.user', user.user_id, {
         maxAge: 60 * 60 * 24 * 365, //1 year
       });
 
       setUser(user);
       setValidating(false)
-      user.role === 'admin' && Router.push('/admin')
-      user.role === 'evaluator' && Router.push('/alunos');
+      user.role === 'evaluator' ? Router.push('/alunos') : Router.push(`/${user.role}`)
     })
   }
 
