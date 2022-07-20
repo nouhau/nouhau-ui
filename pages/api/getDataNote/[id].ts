@@ -16,7 +16,7 @@ const getDataNote = async (request: NextApiRequest, response: NextApiResponse, t
     const records = await result.data
     await axios({
       method: 'GET',
-      url: `${process.env.API_GATEWAY_URL}/mappingnote/${id}`,
+      url: `${process.env.API_GATEWAY_URL}/mappingNote/${id}`,
       headers: { 
         'Content-Type': 'application/json',
         'Authorization': `${request.headers.authorization}`

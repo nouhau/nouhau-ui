@@ -38,10 +38,11 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
           }
         )
           .then(async response => {
-            const user = await response.json()
+            const { user } = await response.json()
             setUser(user)
 
-            user.role === 'evaluator' ? Router.push('/alunos') : Router.push(`/${user.role}`)
+            user.role === 'admin' && Router.push('/admin')
+            user.role === 'evaluator' && Router.push('/alunos');
           })
       }
     }

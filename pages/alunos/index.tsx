@@ -51,8 +51,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     const user = verify(token, process.env.TOKEN) as Payload
 
-    console.log(user)
-
     if(user.role !== 'evaluator') {
       return {
         redirect: {
