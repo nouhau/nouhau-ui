@@ -35,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if(token) {
     return {
       redirect: {
-        destination: user.role === 'admin' ? '/admin' : '/alunos',
+        destination: user.role === 'evaluator' ? '/alunos' : `/${user.role}`,
         permanent: false
       },
       props: {}
@@ -62,6 +62,7 @@ const Home: NextPage = () => {
     })
     .then(async (response) => {
       const data = await response.json()
+      console.log(data)
 
       const user: any = verify(
         data.token,
@@ -86,8 +87,7 @@ const Home: NextPage = () => {
 
       setUser(user);
       setValidating(false)
-      user.role === 'admin' && Router.push('/admin')
-      user.role === 'evaluator' && Router.push('/alunos');
+      user.role === 'evaluator' ? Router.push('/alunos') : Router.push(`/${user.role}`)
     })
   }
 

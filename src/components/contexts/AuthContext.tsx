@@ -41,8 +41,7 @@ export const AuthProvider = ({ children }: IAuthProvider) => {
             const user = await response.json()
             setUser(user)
 
-            user.role === 'admin' && Router.push('/admin')
-            user.role === 'evaluator' && Router.push('/alunos');
+            user.role === 'evaluator' ? Router.push('/alunos') : Router.push(`/${user.role}`)
           })
       }
     }

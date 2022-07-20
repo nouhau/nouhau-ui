@@ -88,8 +88,6 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
 
   notes.sort((a: Note ,b: Note) => (a.evaluator_id > b.evaluator_id) ? 1 : ((b.evaluator_id > a.evaluator_id) ? -1 : 0))
 
-  console.log(user)
-
   const userId: string | undefined = user?.user_id ? user?.user_id : user?.sub
   const notesEvaluator: Note[] = notes.filter((note: Note) => note.evaluator_id === userId)
 
@@ -241,7 +239,7 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
           </Flex>
         </Box>
       </Card>
-      {user?.role !== "admin" ? (
+      {user?.role !== "admin" && user?.role !== "manager"? (
         <Card>
           <Box paddingTop="5" padding="5">
             <Flex>
@@ -266,7 +264,7 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
       ) : (
         <Card>
           <Flex direction="row" paddingTop="5" paddingLeft="5">
-          <Flex direction="column" width="50%">
+            <Flex direction="column" width="50%">
               <Text fontWeight="bold">Notas</Text>
               <Table size="sm">
                 <Thead>
@@ -320,13 +318,16 @@ const EvaluationPage: NextPage = ({ student, notes }: any) => {
                 Voltar
               </Button>
 
-              <Button 
-                marginLeft='2' 
-                onClick={updateMapping} 
-                backgroundColor="#10DCAB"
-              >
-                Gerar notas
-              </Button>
+              {
+                user?.role === "admin" &&
+                <Button 
+                  marginLeft='2' 
+                  onClick={updateMapping} 
+                  backgroundColor="#10DCAB"
+                >
+                  Gerar notas
+                </Button>
+              }
             </Flex>
           </Box>
         </Card>
