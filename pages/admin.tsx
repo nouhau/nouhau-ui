@@ -38,7 +38,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       }
     ).then(async (response) => {
       const data = await response.json();
-      return data;
+      return data.students;
     })
 
     return {
