@@ -2,14 +2,11 @@ import {
   Box,
   Text,
   Flex,
-  Spacer,
-  
 } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { verify } from 'jsonwebtoken'
 import type { GetServerSideProps, NextPage } from 'next'
 import { parseCookies } from 'nookies'
-import EvaluatorStatus from '../src/components/EvaluatorStatus/EvaluatorStatus'
 import Card from '../src/lib/Card'
 import { Payload } from '../src/models/payload.model'
 import { User } from '../src/models/user.model'
@@ -20,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     const user = verify(token, process.env.TOKEN) as Payload
 
-    if(user.role !== 'admin') {
+    if(user.role !== 'manager') {
       return {
         redirect: {
           destination: '/',
@@ -30,7 +27,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
 
     const students: User[] = await fetch(
-      `${process.env.API_GATEWAY_URL}/students`,
+      `${process.env.API_GATEWAY_URL}/students/company/${user.company_id}`,
       {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -38,6 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       }
     ).then(async (response) => {
       const data = await response.json();
+      console.log('here', data)
       return data;
     })
 
@@ -57,7 +55,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 }
 
-const Admin: NextPage = ({ user, students }: any) => {
+const Manager: NextPage = ({ user, students }: any) => {
   return (
     <>
       <Card>
@@ -78,8 +76,6 @@ const Admin: NextPage = ({ user, students }: any) => {
                   </Text>
                 </Flex>
               </NextLink>
-                <Spacer />
-                <EvaluatorStatus studentId={student.user_id} evaluatorId={user.sub} />
             </Flex>
           </Card>
         )
@@ -88,4 +84,4 @@ const Admin: NextPage = ({ user, students }: any) => {
   );
 }
 
-export default Admin
+export default Manager

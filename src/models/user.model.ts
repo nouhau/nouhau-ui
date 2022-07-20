@@ -3,5 +3,6 @@ export interface User {
   email: string;
   role: string;
   user_id: string;
-  sub?:string
+  sub?:string;
+  company_id?:string
 }
