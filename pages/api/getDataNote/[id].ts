@@ -3,7 +3,8 @@ import { NextApiRequest, NextApiResponse } from 'next'
 
 const getDataNote = async (request: NextApiRequest, response: NextApiResponse, token: any) => {
   const { id } = request.query
-  
+  console.log('called')
+
   await axios({
     method: 'GET',
     url: `${process.env.API_GATEWAY_URL}/records/${id}`,
@@ -13,6 +14,7 @@ const getDataNote = async (request: NextApiRequest, response: NextApiResponse, t
     }
   })
   .then(async result => {
+    console.log('api here', result)
     const records = await result.data
     await axios({
       method: 'GET',
@@ -24,6 +26,7 @@ const getDataNote = async (request: NextApiRequest, response: NextApiResponse, t
     })
     .then(async result => {
       const mappingData = result.data
+      console.log('api', mappingData)
       return response.status(200).json({records, mappingData})
     })
     .catch(error => {

@@ -3,8 +3,7 @@ import {
   Image, 
   Flex,
   Button,
-  Spacer,
-  Center
+  Spacer
 } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import Router from 'next/router';

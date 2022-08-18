@@ -66,10 +66,11 @@ const Manager: NextPage = ({ user, students }: any) => {
         </Box>
       </Card>
       {students.map((student: User) => {
+        console.log('map', student)
         return(
           <Card key={student.name}>
             <Flex direction='row' padding='3'>
-              <NextLink href={`/alunos/${student.user_id}`}>
+              <NextLink href={`/employe/${student.user_id}`}>
                 <Flex cursor='pointer'>
                   <Text paddingLeft='3' fontWeight='bold'>
                     {student.name}
